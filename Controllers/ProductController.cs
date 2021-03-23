@@ -22,11 +22,12 @@ namespace api_development.Controllers
             return products;
         }
 
-        // GET api/<ProductController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet]
+        [Route("{id:int}")]
+        public async Task<ActionResult<Product>> GetById([FromServices] DataContext context, int id)
         {
-            return "value";
+            var product = await context.Products.FirstOrDefaultAsync(x => x.Id == id);
+            return product;
         }
 
         [HttpPost]
@@ -45,10 +46,14 @@ namespace api_development.Controllers
             }
         }
 
-        // DELETE api/<ProductController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete]
+        [Route("{id:int}")]
+        public async Task<ActionResult<Product>> DeleteById([FromServices] DataContext context, int id)
         {
+            var product = await context.Products.FirstOrDefaultAsync(x => x.Id == id);
+            context.Products.Remove(product);
+            context.SaveChanges();
+            return product;
         }
     }
 }
