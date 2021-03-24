@@ -12,5 +12,6 @@ namespace api_development.Data
 
         public DbSet<Product> Products { get; set; }
         public DbSet<Compra> Compra { get; set; }
+        public DbSet<Pagamento> Pagamento { get; set; }
     }
 }
