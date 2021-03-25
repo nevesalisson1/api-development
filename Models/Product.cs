@@ -20,11 +20,11 @@ namespace api_development.Models
         [Range(0, int.MaxValue, ErrorMessage = "A quantidade deve ser maior ou igual que zero" )]
         public int Qtde_estoque { get; set; }
 
-        public float Valor_ultima_venda { get; set; }
+        public float? Valor_ultima_venda { get; set; }
 
         [DataType(DataType.Date)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd/MM/yyyy}")]
-        public DateTime Data_ultima_venda { get; set; }
+        public DateTime? Data_ultima_venda { get; set; }
 
     }
 }

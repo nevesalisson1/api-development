@@ -26,8 +26,12 @@ namespace api_development.Controllers
                 {
                     if (model.Qtde_comprada <= product.Qtde_estoque) // Se a quantidade de compras é menor que a quantidade em estoque 
                     {
+
+                        var produto = context.Products.SingleOrDefault(x => x.Id == model.Produto_id);
                         context.Compra.Add(model);
-                        context.Products.SingleOrDefault(x => x.Id == model.Produto_id).Qtde_estoque -= model.Qtde_comprada; // Diminui do banco a quantidade de estoque subtraindo a quantidade comprada
+                        produto.Data_ultima_venda = System.DateTime.Now; //Seta a data ultima venda
+                        produto.Valor_ultima_venda = model.Qtde_comprada * produto.Valor_unitario; // Seta "valor_ultima_venda" 
+                        produto.Qtde_estoque -= model.Qtde_comprada; // Diminui do banco a quantidade de estoque subtraindo a quantidade comprada
                         await context.SaveChangesAsync();
                     }
                 }
