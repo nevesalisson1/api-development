@@ -20,7 +20,7 @@ namespace api_development.Models
         [Required(ErrorMessage = "Deve ser informada a bandeira do cartão.")]
         public string Bandeira { get; set; }
 
-        [Required(ErrorMessage = "Deve ser informada o cvv do cartão.")]
+        [Required(ErrorMessage = "Deve ser informado o cvv do cartão.")]
         public string Cvv { get; set; }
 
         internal int CreditCard_Evaluation() // Checa se o cartão é válido, retora 1 se válido, retorna 0 se não válido.
