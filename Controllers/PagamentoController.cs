@@ -5,10 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using api_development.Data;
 using api_development.Models;
 using System;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace api_development.Controllers
 {
@@ -18,7 +14,7 @@ namespace api_development.Controllers
     {
         [HttpPost]
         [Route("compras")]
-        public string Post([FromServices] DataContext context, [FromBody] Pagamento model)
+        public ActionResult Post([FromServices] DataContext context, [FromBody] Pagamento model)
         {
             if (model.Cartao.CreditCard_Evaluation() == 1) // Se o cartão é válido.
             {
@@ -35,13 +31,17 @@ namespace api_development.Controllers
                 }
 
                 StatusCompra statusCompra = new StatusCompra(model.Valor, estado);
-                string output = JsonConvert.SerializeObject(statusCompra);
 
-                return output;
+                return Ok(statusCompra);
             }
-            else
+            else // Se o cartão NÃO for válido.
             {
-                return "";
+                var saida = new
+                {
+                    codigo = "400",
+                    resposta = "O cartão de crédito não é válido"
+                };
+                return BadRequest(saida);
             }
         }
 

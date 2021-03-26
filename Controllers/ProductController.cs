@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using api_development.Data;
 using api_development.Models;
+using Microsoft.AspNetCore.Http;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace api_development.Controllers
 {
@@ -16,44 +16,71 @@ namespace api_development.Controllers
         [HttpGet]
         [Route("")]
 
-        public async Task<ActionResult<List<Product>>> Get([FromServices] DataContext context)
+        public async Task<ActionResult> Get([FromServices] DataContext context)
         {
             var products = await context.Products.ToListAsync();
-            return products;
+            return Ok(products);
         }
 
         [HttpGet]
         [Route("{id:int}")]
-        public async Task<ActionResult<Product>> GetById([FromServices] DataContext context, int id)
+        public async Task<ActionResult> GetById([FromServices] DataContext context, int id)
         {
             var product = await context.Products.FirstOrDefaultAsync(x => x.Id == id);
-            return product;
+            if (product != null) // Se o produto existir
+            {
+                return Ok(product);
+            }
+            else // Se o produto NÃO existir
+            {
+                var saida = new
+                {
+                    codigo = "404",
+                    resposta = "O produto a ser exibido não foi achado"
+                };
+                return NotFound(saida);
+            }
         }
 
         [HttpPost]
         [Route("")]
-        public async Task<ActionResult<Product>> Post([FromServices] DataContext context, [FromBody]Product model)
+        public async Task<ActionResult> Post([FromServices] DataContext context, [FromBody]Product model)
         {
-            if (ModelState.IsValid)
+            context.Products.Add(model);
+            await context.SaveChangesAsync();
+            var saida = new
             {
-                context.Products.Add(model);
-                await context.SaveChangesAsync();
-                return model;
-            }
-            else
-            {
-                return BadRequest(ModelState);
-            }
+                codigo = "200",
+                resposta = "Produto Cadastrado"
+            };
+            return Ok(saida);
         }
 
         [HttpDelete]
         [Route("{id:int}")]
-        public async Task<ActionResult<Product>> DeleteById([FromServices] DataContext context, int id)
+        public async Task<ActionResult> DeleteById([FromServices] DataContext context, int id)
         {
             var product = await context.Products.FirstOrDefaultAsync(x => x.Id == id);
-            context.Products.Remove(product);
-            context.SaveChanges();
-            return product;
+            if (product != null) // Se o produto existir
+            {
+                context.Products.Remove(product);
+                context.SaveChanges();
+                var saida = new
+                {
+                    codigo = "200",
+                    resposta = "Produto excluído com sucesso"
+                };
+                return Ok(saida);
+            }
+            else // Se o produto NÃO existir
+            {
+                var saida = new
+                {
+                    codigo = "404",
+                    resposta = "O produto a ser excluído não foi achado"
+                };
+                return NotFound(saida);
+            }
         }
     }
 }
